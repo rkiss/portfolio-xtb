@@ -1461,6 +1461,8 @@ public class Messages extends NLS
     public static String WatchlistNewLabel;
     public static String WatchlistRename;
     public static String Website;
+    public static String XTBImportFilterName;
+    public static String XTBImportWizardAssistant;
     public static String YearlyPerformanceHeatmapToolTip;
     static
     {

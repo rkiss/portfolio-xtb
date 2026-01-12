@@ -19,6 +19,10 @@ Eclipse Public License Version 1.0 (&quot;EPL&quot;).  A copy of the EPL is avai
 For purposes of the EPL, &quot;Program&quot; will mean the Content.
    </license>
 
+   <includes
+         id="org.eclipse.orbit.maven.org.apache.poi"
+         version="0.0.0"/>
+
    <plugin
          id="name.abuchen.portfolio.pdfbox1"
          download-size="0"

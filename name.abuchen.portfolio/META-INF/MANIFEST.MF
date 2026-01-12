@@ -12,6 +12,7 @@ Export-Package: name.abuchen.portfolio,
  name.abuchen.portfolio.datatransfer.csv.exporter,
  name.abuchen.portfolio.datatransfer.ibflex,
  name.abuchen.portfolio.datatransfer.pdf,
+ name.abuchen.portfolio.datatransfer.xtb,
  name.abuchen.portfolio.events,
  name.abuchen.portfolio.json,
  name.abuchen.portfolio.math,
@@ -77,8 +78,13 @@ Require-Bundle: org.eclipse.core.runtime,
  com.google.gson,
  org.osgi.service.component,
  name.abuchen.portfolio.pdfbox1;bundle-version="0.81.6",
- name.abuchen.portfolio.pdfbox3;bundle-version="0.81.6"
+ name.abuchen.portfolio.pdfbox3;bundle-version="0.81.6",
+ org.apache.logging.log4j.api,
+ org.apache.commons.lang3,
+ org.apache.poi;bundle-version="5.4.1",
+ org.apache.poi.ooxml;bundle-version="5.4.1"
 Automatic-Module-Name: name.abuchen.portfolio
 Bundle-ActivationPolicy: lazy
+Bundle-Activator: name.abuchen.portfolio.Activator
 Service-Component: OSGI-INF/name.abuchen.portfolio.util.ImageioSpiRegistration.xml
 Require-Capability: osgi.extender;filter:="(osgi.extender=osgi.serviceloader.processor)",osgi.serviceloader;filter:="(osgi.serviceloader=javax.imageio.spi.ImageReaderSpi)";cardinality:=multiple
