@@ -340,11 +340,11 @@ public class XTBTransactionsHistoryExtractor implements Extractor
             return null;
         }
         String sDivPerShare = matcher.group(1);
-        long divPerShare = 0;
+        long nrOfShares = 0;
         try
         {
             double dShares = Double.parseDouble(sDivPerShare);
-            divPerShare = Math.round(dShares * Values.Share.factor());
+            nrOfShares = Math.round(Values.Share.factor() * xtbCashOp.dblAmount / dShares);
         }
         catch (NumberFormatException e)
         {
@@ -356,7 +356,7 @@ public class XTBTransactionsHistoryExtractor implements Extractor
 
         AccountTransaction transaction = (AccountTransaction) result.getSubject();
 
-        transaction.setShares(divPerShare);
+        transaction.setShares(nrOfShares);
 
         return result;
     }
