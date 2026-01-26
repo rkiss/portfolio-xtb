@@ -14,6 +14,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValu
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSecurity;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
@@ -34,6 +35,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAc
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countItemsWithFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSkippedItems;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -96,6 +98,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(6));
         new AssertImportActions().check(results, "EUR");
 
@@ -203,6 +206,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(20));
         new AssertImportActions().check(results, "EUR");
 
@@ -441,6 +445,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -489,6 +494,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -538,6 +544,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(7));
         new AssertImportActions().check(results, "EUR");
 
@@ -666,6 +673,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
@@ -731,6 +739,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(7));
         new AssertImportActions().check(results, "EUR");
 
@@ -800,6 +809,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -849,6 +859,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -898,6 +909,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -942,6 +954,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(5));
         new AssertImportActions().check(results, "EUR");
 
@@ -997,6 +1010,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(2L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -1040,6 +1054,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -1063,6 +1078,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(5L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(5));
         new AssertImportActions().check(results, "EUR");
 
@@ -1110,6 +1126,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -1159,6 +1176,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -1208,6 +1226,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -1257,6 +1276,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -1306,6 +1326,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -1354,6 +1375,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -1403,6 +1425,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -1452,6 +1475,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -1501,6 +1525,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -1550,6 +1575,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
@@ -1615,6 +1641,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -1652,6 +1679,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -1701,6 +1729,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -1750,6 +1779,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -1798,6 +1828,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -1847,6 +1878,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -1891,6 +1923,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -1935,6 +1968,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -1979,6 +2013,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -2034,6 +2069,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -2076,6 +2112,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -2119,6 +2156,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -2164,6 +2202,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -2214,6 +2253,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -2263,6 +2303,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(3L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(6));
         new AssertImportActions().check(results, "EUR");
 
@@ -2340,6 +2381,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -2390,6 +2432,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
@@ -2456,6 +2499,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(4));
         new AssertImportActions().check(results, "EUR");
 
@@ -2533,6 +2577,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(19L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(20));
         new AssertImportActions().check(results, "EUR");
 
@@ -2864,6 +2909,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(2L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -2931,6 +2977,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(2L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -2968,6 +3015,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(3L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(2L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
@@ -3069,6 +3117,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(3L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
@@ -3146,6 +3195,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(4L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(4));
         new AssertImportActions().check(results, "EUR");
 
@@ -3182,6 +3232,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(13L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(13));
         new AssertImportActions().check(results, "EUR");
 
@@ -3241,6 +3292,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -3290,6 +3342,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -3339,6 +3392,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -3388,6 +3442,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -3437,6 +3492,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
@@ -3502,6 +3558,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -3550,6 +3607,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -3594,6 +3652,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -3646,6 +3705,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -3690,6 +3750,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -3745,6 +3806,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -3787,6 +3849,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -3841,6 +3904,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -3882,6 +3946,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -3937,6 +4002,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -3979,6 +4045,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -4034,6 +4101,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -4076,6 +4144,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "USD");
 
@@ -4126,6 +4195,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -4170,6 +4240,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(2L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(5));
         new AssertImportActions().check(results, "EUR");
 
@@ -4221,6 +4292,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -4270,6 +4342,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -4311,6 +4384,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -4338,6 +4412,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
@@ -4388,6 +4463,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -4423,6 +4499,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -4456,6 +4533,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -4489,6 +4567,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -4522,6 +4601,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -4555,6 +4635,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -4574,6 +4655,39 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
+    public void testFlatExDegiroKauf09()
+    {
+        var extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroKauf09.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B3WJKG14"), hasWkn("A142N1"), hasTicker(null), //
+                        hasName("ISHARES S&P 500 INFO TECH"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-01-02T16:24"), hasShares(13.948947), //
+                        hasSource("FlatExDegiroKauf09.txt"), //
+                        hasNote("Transaktion-Nr.: 4685418678"), //
+                        hasAmount("EUR", 501.50), hasGrossValue("EUR", 500.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 1.50))));
+    }
+
+    @Test
     public void testCryptoKauf01()
     {
         List<Exception> errors = new ArrayList<>();
@@ -4586,6 +4700,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -4621,6 +4736,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -4681,6 +4797,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -4727,6 +4844,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
@@ -4768,6 +4886,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -4801,6 +4920,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(2L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(4));
         new AssertImportActions().check(results, "EUR");
 
@@ -4850,6 +4970,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -4883,6 +5004,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
@@ -4924,6 +5046,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -4956,6 +5079,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -4990,6 +5114,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(4));
         new AssertImportActions().check(results, "EUR");
 
@@ -5046,6 +5171,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -5105,6 +5231,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -5146,6 +5273,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(2L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
@@ -5216,6 +5344,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(2L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -5273,6 +5402,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -5329,6 +5459,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -5372,6 +5503,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "USD");
 
@@ -5416,6 +5548,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -5457,6 +5590,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -5484,6 +5618,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -5525,6 +5660,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -5552,6 +5688,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -5593,6 +5730,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -5620,6 +5758,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "USD");
 
@@ -5652,6 +5791,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -5684,6 +5824,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -5725,6 +5866,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -5752,6 +5894,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -5787,6 +5930,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -5828,6 +5972,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -5856,6 +6001,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
 
         // check security
@@ -5892,6 +6038,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -5927,6 +6074,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -5960,6 +6108,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -5996,6 +6145,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -6032,6 +6182,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -6068,6 +6219,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -6104,6 +6256,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -6139,6 +6292,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -6188,6 +6342,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "USD");
 
@@ -6265,6 +6420,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "USD");
 
@@ -6326,6 +6482,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(4));
         new AssertImportActions().check(results, "EUR");
 
@@ -6404,6 +6561,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(3L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
@@ -6457,6 +6615,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(13L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(13));
         new AssertImportActions().check(results, "EUR");
 
@@ -6610,6 +6769,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(3L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
@@ -6663,6 +6823,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(6L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(6));
         new AssertImportActions().check(results, "EUR");
 
@@ -6706,6 +6867,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(7L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(3L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(7));
         new AssertImportActions().check(results, "EUR");
 
@@ -6871,6 +7033,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(24L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(24));
         new AssertImportActions().check(results, "EUR");
 
@@ -7134,6 +7297,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(8L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(8));
         new AssertImportActions().check(results, "EUR");
 
@@ -7185,6 +7349,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -7211,6 +7376,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(4L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(4));
         new AssertImportActions().check(results, "EUR");
 
@@ -7248,6 +7414,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(2L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -7279,6 +7446,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(2L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -7306,6 +7474,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(2L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -7335,6 +7504,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(4));
         new AssertImportActions().check(results, "EUR");
 
@@ -7406,6 +7576,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -7456,6 +7627,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
@@ -7521,6 +7693,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -7582,6 +7755,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -7629,6 +7803,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -7648,6 +7823,255 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
+    public void testFlatExDeGiroSammelabrechnung06()
+    {
+        var extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDeGiroSammelabrechnung06.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(2L));
+        assertThat(countBuySell(results), is(2L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, "EUR");
+
+        // check securities
+        assertThat(results, hasItem(security( //
+                        hasIsin("JE00B2NFTL95"), hasWkn("A0V6Z0"), hasTicker(null), //
+                        hasName("WITR COM.SEC.Z08/UN.IDX"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("XS2852999775"), hasWkn("A4AH1M"), hasTicker(null), //
+                        hasName("LEVERAGE SHARES GOLD+ ETP"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check purchase transactions
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("JE00B2NFTL95")),
+                        hasDate("2025-12-29T08:31"), hasShares(9.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung06.txt"), //
+                        hasNote("Transaktion-Nr.: 4636047412"), //
+                        hasAmount("EUR", 1683.96), hasGrossValue("EUR", 1742.67), //
+                        hasTaxes("EUR", 50.07), hasFees("EUR", 5.90 + 2.74))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("XS2852999775")),
+                        hasDate("2025-12-29T08:51"), hasShares(150.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung06.txt"), //
+                        hasNote("Transaktion-Nr.: 4666192991"), //
+                        hasAmount("EUR", 2033.04), hasGrossValue("EUR", 2024.40), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 2.74))));
+    }
+    
+    @Test
+    public void testFlatExDeGiroSammelabrechnung07()
+    {
+        var extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDeGiroSammelabrechnung07.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(12L));
+        assertThat(countBuySell(results), is(12L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(24));
+        new AssertImportActions().check(results, "EUR");
+
+        // AES CORP., THE
+        assertThat(results, hasItem(security( //
+                        hasIsin("US00130H1059"), hasWkn("882177"), hasTicker(null), //
+                        hasName("AES CORP., THE"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US00130H1059")), //
+                        hasDate("2026-01-02T15:30"), hasShares(120.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung07.txt"), //
+                        hasNote("Transaktion-Nr.: 4682588850"), //
+                        hasAmount("EUR", 1460.05), hasGrossValue("EUR", 1476.00), //
+                        hasTaxes("EUR", 9.31), hasFees("EUR", 5.90 + 0.74))));
+
+        // AURINIA PHARMACEUTICALS I (includes negative taxes - unsupported)
+        assertThat(results, hasItem(security( //
+                        hasIsin("CA05156V1022"), hasWkn("A1W7D4"), hasTicker(null), //
+                        hasName("AURINIA PHARMACEUTICALS I"), //
+                        hasCurrencyCode("EUR"))));
+
+        // Nr.329633182/1 Verkauf AURINIA
+        // PHARMACEUTICALS I (CA05156V1022/A1W7D4)
+        // Ordervolumen : 105,00 St. Handelsplatz : Société Générale
+        // davon ausgef. : 105,00 St. Schlusstag : 02.01.2026, 15:30 Uhr
+        // Kurs : 13,4600 EUR Kurswert : 1.413,30 EUR
+        // Devisenkurs : Provision : 5,90 EUR
+        // Bew-Faktor : 1,0000 Eigene Spesen :
+        // Verwahrart : Wertpapierrechnung * Fremde Spesen : 2,40 EUR
+        // Lagerstelle : Clearstream Lux.
+        // Lagerland : Canada ** Einbeh. Steuer : -9,31 EUR
+        // Gewinn/Verlust : -47,78 EUR
+        // Valuta : 06.01.2026 Endbetrag : 1.414,31 EUR
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("CA05156V1022")), //
+                        hasDate("2026-01-02T15:30"), hasShares(105.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung07.txt"), //
+                        hasNote("Transaktion-Nr.: 4682592903"), //
+                        hasAmount("EUR", 1414.31), hasGrossValue("EUR", 1422.61), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 2.40))));
+
+        // BROADCOM INC.
+        assertThat(results, hasItem(security( //
+                        hasIsin("US11135F1012"), hasWkn("A2JG9Z"), hasTicker(null), //
+                        hasName("BROADCOM INC."), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US11135F1012")), //
+                        hasDate("2026-01-02T15:30"), hasShares(5.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung07.txt"), //
+                        hasNote("Transaktion-Nr.: 4682595695"), //
+                        hasAmount("EUR", 1500.11), hasGrossValue("EUR", 1506.75), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 0.74))));
+
+        // CARETRUST REIT INC.
+        assertThat(results, hasItem(security( //
+                        hasIsin("US14174T1079"), hasWkn("A11398"), hasTicker(null), //
+                        hasName("CARETRUST REIT INC."), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US14174T1079")), //
+                        hasDate("2026-01-02T15:32"), hasShares(45.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung07.txt"), //
+                        hasNote("Transaktion-Nr.: 4682601474"), //
+                        hasAmount("EUR", 1368.70), hasGrossValue("EUR", 1377.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 2.40))));
+
+        // ELI LILLY AND COMPANY (includes page break)
+        assertThat(results, hasItem(security( //
+                        hasIsin("US5324571083"), hasWkn("858560"), hasTicker(null), //
+                        hasName("ELI LILLY AND COMPANY"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US5324571083")), //
+                        hasDate("2026-01-02T15:32"), hasShares(2.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung07.txt"), //
+                        hasNote("Transaktion-Nr.: 4682602407"), //
+                        hasAmount("EUR", 1801.36), hasGrossValue("EUR", 1808.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 0.74))));
+
+        // VIATRIS INC.
+        assertThat(results, hasItem(security( //
+                        hasIsin("US92556V1061"), hasWkn("A2QAME"), hasTicker(null), //
+                        hasName("VIATRIS INC."), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US92556V1061")), //
+                        hasDate("2026-01-02T15:32"), hasShares(160.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung07.txt"), //
+                        hasNote("Transaktion-Nr.: 4682603713"), //
+                        hasAmount("EUR", 1649.87), hasGrossValue("EUR", 1689.60), //
+                        hasTaxes("EUR", 33.09), hasFees("EUR", 5.90 + 0.74))));
+
+        // SOTERA HEALTH COMPANY
+        assertThat(results, hasItem(security( //
+                        hasIsin("US83601L1026"), hasWkn("A2QHA5"), hasTicker(null), //
+                        hasName("SOTERA HEALTH COMPANY"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US83601L1026")), //
+                        hasDate("2026-01-02T15:34"), hasShares(95.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung07.txt"), //
+                        hasNote("Transaktion-Nr.: 4682606959"), //
+                        hasAmount("EUR", 1450.88), hasGrossValue("EUR", 1442.58), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 2.40))));
+
+        // ENOVA INTERNATIONAL
+        assertThat(results, hasItem(security( //
+                        hasIsin("US29357K1034"), hasWkn("A12D51"), hasTicker(null), //
+                        hasName("ENOVA INTERNATIONAL INC."), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US29357K1034")), //
+                        hasDate("2026-01-02T15:34"), hasShares(10.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung07.txt"), //
+                        hasNote("Transaktion-Nr.: 4682608626"), //
+                        hasAmount("EUR", 1388.30), hasGrossValue("EUR", 1380.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 2.40))));
+
+        // NU HOLDINGS LTD. A
+        assertThat(results, hasItem(security( //
+                        hasIsin("KYG6683N1034"), hasWkn("A3C82G"), hasTicker(null), //
+                        hasName("NU HOLDINGS LTD. A"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("KYG6683N1034")), //
+                        hasDate("2026-01-02T15:35"), hasShares(100.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung07.txt"), //
+                        hasNote("Transaktion-Nr.: 4682610434"), //
+                        hasAmount("EUR", 1433.90), hasGrossValue("EUR", 1425.60), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 2.40))));
+
+        // FORD MOTOR CO. (includes page break)
+        assertThat(results, hasItem(security( //
+                        hasIsin("US3453708600"), hasWkn("502391"), hasTicker(null), //
+                        hasName("FORD MOTOR CO."), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US3453708600")), //
+                        hasDate("2026-01-02T15:35"), hasShares(130.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung07.txt"), //
+                        hasNote("Transaktion-Nr.: 4682612776"), //
+                        hasAmount("EUR", 1460.82), hasGrossValue("EUR", 1454.18), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 0.74))));
+
+        // HALLIBURTON CO.
+        assertThat(results, hasItem(security( //
+                        hasIsin("US4062161017"), hasWkn("853986"), hasTicker(null), //
+                        hasName("HALLIBURTON CO."), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US4062161017")), //
+                        hasDate("2026-01-02T15:35"), hasShares(60.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung07.txt"), //
+                        hasNote("Transaktion-Nr.: 4682613610"), //
+                        hasAmount("EUR", 1455.64), hasGrossValue("EUR", 1449.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 0.74))));
+
+        // FORD MOTOR CO. (includes page break)
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0038705702"), hasWkn("889328"), hasTicker(null), //
+                        hasName("MILLICOM INTL CELLULAR S."), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("LU0038705702")), //
+                        hasDate("2026-01-02T15:36"), hasShares(30.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung07.txt"), //
+                        hasNote("Transaktion-Nr.: 4682615368"), //
+                        hasAmount("EUR", 1454.30), hasGrossValue("EUR", 1446.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 2.40))));
+    }
+
+    @Test
     public void testFlatExDeGiroDepotServiceGebuehr01()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
@@ -7663,6 +8087,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -7725,6 +8150,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 

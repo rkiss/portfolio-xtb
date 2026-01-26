@@ -8,12 +8,18 @@ import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
+import name.abuchen.portfolio.datatransfer.pdf.PDFParser.LineSpan;
+import name.abuchen.portfolio.datatransfer.pdf.PDFParser.SplittingStrategy;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
@@ -66,7 +72,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<BuySellEntry>();
 
-        var firstRelevantLine = new Block();
+        var firstRelevantLine = new Block("^.*Auftragsdatum.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -540,7 +546,40 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<BuySellEntry>();
 
-        var firstRelevantLine = new Block("^Nr\\.[\\s]*[\\d]+\\/[\\d]+[\\s]{1,}(Kauf|Verkauf).*$");
+        // In summary statements, each block starts with a line that contains
+        // an identifier and a transaction type, e.g.:
+        // Nr.60797017/1 Kauf ...
+        //
+        // Due to page breaks in the PDF document, this header line can appear
+        // multiple times. Repeated occurrences must be ignored to prevent
+        // the creation of duplicate blocks.
+
+        var startsWith = Pattern.compile("^Nr\\.[\\s]*[\\d]+\\/[\\d]+[\\s]{1,}(Kauf|Verkauf).*$");
+        var splittingStrategy = (SplittingStrategy) lines -> {
+            var blockIdentifiers = new HashSet<String>();
+
+            // first: find the start of the blocks
+            var blockStarts = new ArrayList<Integer>();
+
+            for (int ii = 0; ii < lines.length; ii++)
+            {
+                Matcher matcher = startsWith.matcher(lines[ii]);
+                if (matcher.matches() && blockIdentifiers.add(lines[ii]))
+                    blockStarts.add(ii);
+            }
+
+            // second: convert to line spans
+            var spans = new ArrayList<LineSpan>();
+            for (int ii = 0; ii < blockStarts.size(); ii++)
+            {
+                int startLine = blockStarts.get(ii);
+                int endLine = ii + 1 < blockStarts.size() ? blockStarts.get(ii + 1) - 1 : lines.length - 1;
+                spans.add(new LineSpan(startLine, endLine));
+            }
+            return spans;
+        };
+
+        var firstRelevantLine = new Block(splittingStrategy);
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -559,15 +598,32 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             if ("Verkauf".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
-
-                        // @formatter:off
-                        // Nr.60796942/1  Kauf               BAYWA AG VINK.NA. O.N. (DE0005194062/519406)
-                        // Kurs         : 39,2480 EUR             Kurswert       :           5.887,20 EUR
-                        // @formatter:on
-                        .section("name", "isin", "wkn", "currency").optional() //
-                        .match("^Nr\\.[\\s]*[\\d]+\\/[\\d]+[\\s]{1,}(Kauf|Verkauf)[\\s]{1,}(?<name>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\)$") //
-                        .match("^Kurs[:\\s]{1,}[\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Nr.60796942/1  Kauf               BAYWA AG VINK.NA. O.N. (DE0005194062/519406)
+                                        // Kurs         : 39,2480 EUR             Kurswert       :           5.887,20 EUR
+                                        // @formatter:on
+                                        section -> section
+                                        .attributes("name", "isin", "wkn", "currency") //
+                                        .match("^Nr\\.[\\s]*[\\d]+\\/[\\d]+[\\s]{1,}(Kauf|Verkauf)[\\s]{1,}(?<name>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\)$") //
+                                        .match("^Kurs[:\\s]{1,}[\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
+                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        
+                                        // @formatter:off
+                                        // Nr.329393872/1 Verkauf WITR 
+                                        // COM.SEC.Z08/UN.IDX (JE00B2NFTL95/A0V6Z0)
+                                        // Kurs : 193,6300 EUR Kurswert : 1.742,67 EUR
+                                        // @formatter:on
+                                        section -> section
+                                        .attributes("name", "name2", "isin", "wkn", "currency") //
+                                        .match("^Nr\\.[\\s]*[\\d]+\\/[\\d]+[\\s]{1,}(Kauf|Verkauf)[\\s]{1,}(?<name>.*)$") //
+                                        .match("^(?<name2>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\)$") //
+                                        .match("^Kurs[:\\s]{1,}[\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
+                                        .assign((t, v) -> {
+                                            v.put("name", concatenate(v.get("name"), v.get("name2"), " "));
+                                            t.setSecurity(getOrCreateSecurity(v));
+                                        }))
 
                         // @formatter:off
                         // davon ausgef.: 150,00 St.              Schlusstag     :  28.01.2014, 12:50 Uhr
