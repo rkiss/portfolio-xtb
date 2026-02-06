@@ -5,13 +5,13 @@
 
 	<groupId>name.abuchen.portfolio</groupId>
 	<artifactId>portfolio-app</artifactId>
-	<version>0.81.4-SNAPSHOT</version>
+	<version>0.81.5-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Portfolio Performance</name>
 
 	<properties>
-		<tycho-version>5.0.1</tycho-version>
+		<tycho-version>5.0.2</tycho-version>
 		<jarsigner.skip>true</jarsigner.skip>
 		<gpgsigner.skip>true</gpgsigner.skip>
 		<applesigner.skip>true</applesigner.skip>
@@ -539,7 +539,7 @@
 						<dependency>
 							<groupId>com.puppycrawl.tools</groupId>
 							<artifactId>checkstyle</artifactId>
-							<version>13.0.0</version>
+							<version>13.1.0</version>
 						</dependency>
 					</dependencies>
 					<executions>

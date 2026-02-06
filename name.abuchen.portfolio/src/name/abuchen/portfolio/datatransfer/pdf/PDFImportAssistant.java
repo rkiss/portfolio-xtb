@@ -35,6 +35,7 @@ public class PDFImportAssistant
         extractors.add(new AkfBankPDFExtractor(client));
         extractors.add(new ArkeaDirectBankPDFExtractor(client));
         extractors.add(new AudiBankPDFExtractor(client));
+        extractors.add(new AustrianAnadiBankPDFExtractor(client));
         extractors.add(new AlpacCapitalPDFExtractor(client));
         extractors.add(new ApoBankPDFExtractor(client));
         extractors.add(new AvivaPLCPDFExtractor(client));
@@ -101,6 +102,7 @@ public class PDFImportAssistant
         extractors.add(new N26BankAGPDFExtractor(client));
         extractors.add(new NIBCBankPDFExtractor(client));
         extractors.add(new NordaxBankABPDFExtractor(client));
+        extractors.add(new NorddeutscheLandesbankPDFExtractor(client));
         extractors.add(new OldenburgischeLandesbankAGPDFExtractor(client));
         extractors.add(new LGTBankPDFExtractor(client));
         extractors.add(new LiechtensteinischeLandesbankAGPDFExtractor(client));
