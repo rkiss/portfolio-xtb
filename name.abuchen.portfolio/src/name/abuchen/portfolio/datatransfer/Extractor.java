@@ -694,6 +694,7 @@ public interface Extractor
     static class SkippedItem extends Item
     {
         private String skipReason;
+        private Item originalItem;
 
         private LocalDateTime dateTime;
         private Money amount;
@@ -732,6 +733,7 @@ public interface Extractor
         public SkippedItem(Item item, String reason)
         {
             skipReason = reason;
+            originalItem = item;
             subject = new SkippedSubject();
 
             // copy basic data from original item
@@ -804,6 +806,11 @@ public interface Extractor
         public String getSkipReason()
         {
             return skipReason;
+        }
+
+        public Item getOriginalItem()
+        {
+            return originalItem;
         }
 
     }

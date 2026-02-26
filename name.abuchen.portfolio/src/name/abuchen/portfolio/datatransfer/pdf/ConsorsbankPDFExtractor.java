@@ -374,7 +374,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                             var item = new BuySellEntryItem(t);
 
                             if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() == 0)
-                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             return item;
                         });
@@ -416,7 +416,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("type").optional() //
                         .match("^(?<type>Storno) .*$") //
-                        .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorOrderCancellationUnsupported))
+                        .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionOrderCancellationUnsupported))
 
                         .oneOf( //
                                         // @formatter:off
@@ -820,7 +820,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                             var item = new TransactionItem(t);
 
                             if (t.getAmount() == 0)
-                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             return item;
                         });
@@ -866,21 +866,24 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         //                                                                 90,61
                         // @formatter:on
 
-                        .section("amount", "sign") //
+                        .section("amount", "type") //
                         .find("^[\\s]*Erstattung\\/Belastung \\(\\-\\) von Steuern.*") //
-                        .match("[\\s]*(?<amount>[\\.,\\d]+)(?<sign>(\\-)?).*") //
+                        .match("[\\s]*(?<amount>[\\.,\\d]+)(?<type>(\\-)?).*") //
                         .assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("amount")));
-
-                            if ("-".equals(v.get("sign")))
+                            // @formatter:off
+                            // Is type --> "-" change from TAX_REFUND to TAXES
+                            // @formatter:on
+                            if ("-".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.TAXES);
+
+                            t.setAmount(asAmount(v.get("amount")));
                         })
 
                         .wrap(t -> {
                             var item = new TransactionItem(t);
 
                             if (t.getAmount() == 0)
-                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             return item;
                         });
@@ -1145,7 +1148,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<name>.*) (?<wkn>[A-Z0-9]{6})$")
                                                         .match("^ST (?<shares>[\\.,\\d]+) .*$") //
                                                         .assign((t, v) -> {
-                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
@@ -1171,7 +1174,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                                             .find("Nom\\.\\/Stk\\. Anschaffungsdatum Anschaffungsdaten")
                                                             .match("^(?<shares>[\\.,\\d]+) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Anschaffungswert (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
                                                             .assign((t, v) -> {
-                                                                v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+                                                                v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                                                                 t.setDateTime(asDate(v.get("date")));
                                                                 t.setShares(asShares(v.get("shares")));

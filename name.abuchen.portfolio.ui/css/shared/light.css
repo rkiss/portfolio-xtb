@@ -94,6 +94,27 @@ CustomColors {
 	gray-foreground: #707070;
 }
 
+ValueColorScheme.standard {
+	positive-foreground: #377500;
+	negative-foreground: #7f0000;
+	up-arrow: "scheme/standard/light/up_arrow.svg";
+	down-arrow: "scheme/standard/light/down_arrow.svg";
+}
+
+ValueColorScheme.blueorange {
+	positive-foreground: #0066CC;
+	negative-foreground: #B36E3A;
+	up-arrow: "scheme/blueorange/light/up_arrow.svg";
+	down-arrow: "scheme/blueorange/light/down_arrow.svg";
+}
+
+ValueColorScheme.asia {
+	positive-foreground: #7f0000;
+	negative-foreground: #377500;
+	up-arrow: "scheme/asia/light/up_arrow.svg";
+	down-arrow: "scheme/asia/light/down_arrow.svg";
+}
+
 SecuritiesChart {
 	quote-color: #6a58db;
 	quote-area-positive-color: #8396f2;
@@ -111,11 +132,37 @@ SecuritiesChart {
 	shares-held-color: #EBC934
 }
 
+SecuritiesChart.blueorange {
+	quote-area-negative-color: #F6A15A;
+
+	purchase-event-color: #1E88E5;
+	sale-event-color: #F4511E;
+
+	extreme-marker-high-color: #0D47A1;
+	extreme-marker-low-color: #BF360C;
+}
+
+SecuritiesChart.asia {
+	quote-area-positive-color: #ed6766;
+	quote-area-negative-color: #8396f2;
+
+	purchase-event-color: #FF2B30;
+	sale-event-color: #1AAD21;
+
+	extreme-marker-high-color: #a30000;
+	extreme-marker-low-color: #377500;
+}
+
 PortfolioBalanceChart {
 	invested-capital-color: #EBC934;
 	absolute-delta-color: #6a58db;
 	delta-area-positive-color: #8396f2;
 	delta-area-negative-color: #ed6766;
+}
+
+PortfolioBalanceChart.asia {
+	delta-area-positive-color: #ed6766;
+	delta-area-negative-color: #8396f2;
 }
 
 * {

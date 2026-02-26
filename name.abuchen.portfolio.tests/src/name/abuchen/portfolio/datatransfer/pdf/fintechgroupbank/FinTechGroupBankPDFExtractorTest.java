@@ -1104,7 +1104,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         interest(hasDate("2013-03-31"), hasAmount("EUR", 0.00), //
                                         hasSource("biwAGKontoauszug03.txt"),
                                         hasNote("Zinsabschluss 01.01.2013 - 31.03.2013")))));
@@ -1654,7 +1654,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         // check cancellation (Storno) transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorOrderCancellationUnsupported, //
+                        Messages.MsgErrorTransactionOrderCancellationUnsupported, //
                         purchase( //
                                         hasDate("2018-01-04"), //
                                         hasSource("FinTechKaufStorno01.txt"), //
@@ -2943,7 +2943,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2016-03-31T00:00")));
@@ -2991,7 +2991,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         // assert transaction is cancellation
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         interest( //
                                         hasDate("2016-03-31"), //
                                         hasSource("FinTechKontoauszug02.txt"), //
@@ -3039,7 +3039,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2016-09-30T00:00")));
@@ -3073,7 +3073,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .skip(1).findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2016-12-31T00:00")));
@@ -3151,7 +3151,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2010-09-30T00:00")));
@@ -3671,7 +3671,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.TAXES));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2020-01-11T00:00")));
@@ -4714,7 +4714,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-29T10:09"), hasShares(500), //
+                        hasDate("2026-01-29T10:09"), hasShares(500.00), //
                         hasSource("FlatExDegiroKauf10.txt"), //
                         hasNote("Transaktion-Nr.: 1754597838"), //
                         hasAmount("EUR", 2092.90), hasGrossValue("EUR", 2085.00), //
@@ -4748,11 +4748,45 @@ public class FinTechGroupBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-30T17:30"), hasShares(172), //
+                        hasDate("2026-01-30T17:30"), hasShares(172.00), //
                         hasSource("FlatExDegiroKauf11.txt"), //
                         hasNote("Transaktion-Nr.: 35693739674"), //
                         hasAmount("EUR", 1668.90), hasGrossValue("EUR", 1665.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 1.90 + 2.00))));
+    }
+
+    @Test
+    public void testFlatExDegiroKauf12()
+    {
+        var extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroKauf12.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BG0SKF03"), hasWkn("A2JJAQ"), hasTicker(null), //
+                        hasName("ISHARES EDGE MSCI EM VALU"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-02-02T16:04"), hasShares(4.445934), //
+                        hasSource("FlatExDegiroKauf12.txt"), //
+                        hasNote("Transaktion-Nr.: 4758701150"), //
+                        hasAmount("EUR", 300.00), hasGrossValue("EUR", 298.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 1.50))));
     }
 
     @Test
@@ -6150,7 +6184,7 @@ public class FinTechGroupBankPDFExtractorTest
         // check dividends transaction has failure message because of missing
         // exchange rate for EUR taxes
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.PDFMsgErrorDoNotProcessMissingExchangeRateIfInForex, //
+                        Messages.MsgErrorTransactionMissingExchangeRateIfInForex, //
                         dividend( //
                                         hasDate("2025-12-01T00:00"), hasShares(30.00), //
                                         hasSource("FlatExDegiroDividende13.txt"), //
@@ -6194,6 +6228,77 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
+    public void testFlatExDegiroDividende15()
+    {
+        var extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroDividende15.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US7561091049"), hasWkn("899744"), hasTicker(null), //
+                        hasName("REALTY INCOME CORP."), //
+                        hasCurrencyCode("USD"))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2025-01-09"), hasShares(75.00), //
+                        hasSource("FlatExDegiroDividende15.txt"), //
+                        hasNote("Transaktion-Nr.: 4061359393 | Bruttothesaurierung 400,58 USD"), //
+                        hasAmount("EUR", 107.10), hasGrossValue("EUR", 107.10), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testFlatExDegiroDividende16()
+    {
+        var extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroDividende16.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US57636Q1040"), hasWkn("A0F602"), hasTicker(null), //
+                        hasName("MASTERCARD INC. A"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction has failure message because of missing
+        // exchange rate for EUR taxes
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionMissingExchangeRateIfInForex, //
+                        dividend( //
+                                        hasDate("2026-02-09T00:00"), hasShares(3.00), //
+                                        hasSource("FlatExDegiroDividende16.txt"), //
+                                        hasNote("Transaktion-Nr. : 4773716165"), //
+                                        hasAmount("USD", 1.95), hasGrossValue("USD", 2.34), //
+                                        hasTaxes("USD", 0.39), hasFees("USD", 0.00)))));
+    }
+
+    @Test
     public void testFlatExDegiroDividendeStorno01()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
@@ -6220,7 +6325,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         // check cancellation (Storno) transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorOrderCancellationUnsupported, //
+                        Messages.MsgErrorTransactionOrderCancellationUnsupported, //
                         dividend( //
                                         hasDate("2025-01-02T00:00"), //
                                         hasSource("FlatExDegiroDividendeStorno01.txt"), //
@@ -6291,7 +6396,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         // check unsupported transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorSplitTransactionsNotSupported, //
+                        Messages.MsgErrorTransactionSplitUnsupported, //
                         inboundDelivery( //
                                         hasDate("2024-01-23T00:00"), hasShares(101.910692), //
                                         hasSource("FlatExDegiroFusion01.txt"), //
@@ -6328,7 +6433,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         // check unsupported transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorSplitTransactionsNotSupported, //
+                        Messages.MsgErrorTransactionSplitUnsupported, //
                         inboundDelivery( //
                                         hasDate("2022-08-29T00:00"), hasShares(6.00), //
                                         hasSource("FlatExDegiroKapitalerhoehung01.txt"), //
@@ -6365,7 +6470,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         // check unsupported transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorSplitTransactionsNotSupported, //
+                        Messages.MsgErrorTransactionSplitUnsupported, //
                         inboundDelivery( //
                                         hasDate("2024-04-18T00:00"), hasShares(10.00), //
                                         hasSource("FlatExDegiroKapitalherabsetzung01.txt"), //
@@ -6402,7 +6507,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         // check unsupported transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorSplitTransactionsNotSupported, //
+                        Messages.MsgErrorTransactionSplitUnsupported, //
                         inboundDelivery( //
                                         hasDate("2020-05-13T00:00"), hasShares(37.00), //
                                         hasSource("FlatExDegiroWertpapiertausch01.txt"), //
@@ -6439,7 +6544,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         // check unsupported transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorSplitTransactionsNotSupported, //
+                        Messages.MsgErrorTransactionSplitUnsupported, //
                         inboundDelivery( //
                                         hasDate("2023-01-04T00:00"), hasShares(185.00), //
                                         hasSource("FlatExDegiroWertpapiertausch02.txt"), //
@@ -7093,7 +7198,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.FEES));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2021-07-19T00:00")));
@@ -7127,7 +7232,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .skip(1).findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.FEES));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2021-07-19T00:00")));
@@ -7161,7 +7266,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .skip(2).findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.FEES));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2021-07-19T00:00")));
@@ -7526,7 +7631,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         // assert cancellation transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         interest( //
                                         hasDate("2023-09-30"), hasAmount("EUR", 0.68), //
                                         hasSource("FlatExDegiroKontoauszug04.txt"), hasNote("Zinsabschluss")))));
@@ -7591,7 +7696,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         // assert cancellation transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         interest( //
                                         hasDate("2024-01-02"), hasAmount("EUR", 0.00), //
                                         hasSource("FlatExDegiroKontoauszug06.txt"),
@@ -7680,10 +7785,10 @@ public class FinTechGroupBankPDFExtractorTest
 
         // assert cancellation transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         interest( //
                                         hasDate("2025-09-30"), hasAmount("EUR", 0.00), //
-                                        hasSource("FlatExDegiroKontoauszug09.txt"),
+                                        hasSource("FlatExDegiroKontoauszug09.txt"), //
                                         hasNote("Zinsabschluss 01.07.2025 - 30.09.2025")))));
 
         // assert transaction
@@ -7697,6 +7802,66 @@ public class FinTechGroupBankPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2025-12-03"), hasAmount("EUR", 150.00), //
                         hasSource("FlatExDegiroKontoauszug09.txt"), hasNote("dM239204144852486335"))));
+    }
+
+    @Test
+    public void testFlatExDegiroKontoauszug10()
+    {
+        var extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroKontoauszug10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(9L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(9));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert cancellation transaction
+        assertThat(results, hasItem(interestCharge( //
+                        hasDate("2025-09-30"), hasAmount("EUR", 3.39), //
+                        hasSource("FlatExDegiroKontoauszug10.txt"), //
+                        hasNote("Zinsabschluss 01.07.2025 - 30.09.2025"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-10-01"), hasAmount("EUR", 3000.00), //
+                        hasSource("FlatExDegiroKontoauszug10.txt"), hasNote("Mn132692519750748439"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-10-07"), hasAmount("EUR", 1000.00), //
+                        hasSource("FlatExDegiroKontoauszug10.txt"), hasNote("Iz840881600557395584"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-10-08"), hasAmount("EUR", 500.00), //
+                        hasSource("FlatExDegiroKontoauszug10.txt"), hasNote("If031173443553589854"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-10-09"), hasAmount("EUR", 550.00), //
+                        hasSource("FlatExDegiroKontoauszug10.txt"), hasNote("eS100457973588945924"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-11-06"), hasAmount("EUR", 1000.00), //
+                        hasSource("FlatExDegiroKontoauszug10.txt"), hasNote("at281887082404416719"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-11-27"), hasAmount("EUR", 4000.00), //
+                        hasSource("FlatExDegiroKontoauszug10.txt"), hasNote("kH263779613641675977"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-12-09"), hasAmount("EUR", 1000.00), //
+                        hasSource("FlatExDegiroKontoauszug10.txt"), hasNote("vZ423074479485097902"))));
+
+        // assert cancellation transaction
+        assertThat(results, hasItem(interestCharge( //
+                        hasDate("2025-12-31"), hasAmount("EUR", 0.23), //
+                        hasSource("FlatExDegiroKontoauszug10.txt"), //
+                        hasNote("Zinsabschluss 01.10.2025 - 31.12.2025"))));
     }
 
     @Test
@@ -8049,6 +8214,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(4));
         new AssertImportActions().check(results, "EUR");
 
@@ -8484,6 +8650,41 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
+    public void testFlatExDeGiroSammelabrechnung10()
+    {
+        var extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroSammelabrechnung10.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check securities
+        assertThat(results, hasItem(security( //
+                        hasIsin("US5949181045"), hasWkn("870747"), hasTicker(null), //
+                        hasName("MICROSOFT CORP."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-02-03T15:31"), hasShares(5.00), //
+                        hasSource("FlatExDegiroSammelabrechnung10.txt"), //
+                        hasNote("Transaktion-Nr.: 4761452746"), //
+                        hasAmount("EUR", 1780.75), hasGrossValue("EUR", 1774.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 0.85))));
+    }
+
+    @Test
     public void testFlatExDeGiroDepotServiceGebuehr01()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
@@ -8527,7 +8728,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.FEES));
-        assertThat(cancellation.getFailureMessage(), is(Messages.PDFMsgErrorDoNotProcessMissingExchangeRateIfInForex));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionMissingExchangeRateIfInForex));
 
         assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2023-03-23T00:00")));
@@ -8573,7 +8774,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         // check taxes transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
                                         hasDate("2024-01-29T00:00"), hasShares(265.851), //
                                         hasSource("FlatExDegiroVorabpauschale01.txt"), //

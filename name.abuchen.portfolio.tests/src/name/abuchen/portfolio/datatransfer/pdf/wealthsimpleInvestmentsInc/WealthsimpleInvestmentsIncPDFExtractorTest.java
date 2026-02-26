@@ -1,5 +1,11 @@
 package name.abuchen.portfolio.datatransfer.pdf.wealthsimpleInvestmentsInc;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countItemsWithFailureMessage;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSkippedItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
@@ -51,7 +57,14 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DepotStatement01.txt"), errors);
 
         assertThat(errors, empty());
+        assertThat(countSecurities(results), is(10L));
+        assertThat(countBuySell(results), is(32L));
+        assertThat(countAccountTransactions(results), is(41L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(3L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(83));
+
         new AssertImportActions().check(results, "CAD");
 
         // check security
@@ -1600,6 +1613,12 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DepotStatement01.txt"), errors);
 
         assertThat(errors, empty());
+        assertThat(countSecurities(results), is(7L));
+        assertThat(countBuySell(results), is(32L));
+        assertThat(countAccountTransactions(results), is(41L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(3L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(80));
 
         // check security
@@ -3090,6 +3109,12 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DepotStatement02.txt"), errors);
 
         assertThat(errors, empty());
+        assertThat(countSecurities(results), is(8L));
+        assertThat(countBuySell(results), is(11L));
+        assertThat(countAccountTransactions(results), is(9L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(28));
         new AssertImportActions().check(results, "CAD");
 
@@ -3581,6 +3606,12 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DepotStatement02.txt"), errors);
 
         assertThat(errors, empty());
+        assertThat(countSecurities(results), is(6L));
+        assertThat(countBuySell(results), is(11L));
+        assertThat(countAccountTransactions(results), is(9L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(26));
 
         // check security

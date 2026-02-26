@@ -56,12 +56,12 @@ import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransferDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
-import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
+import name.abuchen.portfolio.ui.util.ValueColorScheme;
 import name.abuchen.portfolio.ui.util.searchfilter.TransactionFilterDropDown;
 import name.abuchen.portfolio.ui.util.searchfilter.TransactionSearchField;
 import name.abuchen.portfolio.ui.util.viewers.Column;
@@ -71,6 +71,7 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateTimeEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateTimeLabelProvider;
+import name.abuchen.portfolio.ui.util.viewers.ExDateEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.MoneyColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
@@ -437,6 +438,27 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
         column.getEditingSupport().addListener(this);
         transactionsColumns.addColumn(column);
 
+        column = new Column("exdate", Messages.ColumnExDate, SWT.None, 80); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                var t = (AccountTransaction) e;
+                return t.getExDate() != null ? Values.Date.format(t.getExDate().toLocalDate()) : null;
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor((AccountTransaction) element);
+            }
+        });
+        ColumnViewerSorter.create(e -> ((AccountTransaction) e).getExDate()).attachTo(column);
+        new ExDateEditingSupport().addListener(this).attachTo(column);
+        column.setVisible(false);
+        transactionsColumns.addColumn(column);
+
         column = new Column("source", Messages.ColumnSource, SWT.None, 120); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -452,7 +474,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
                 return colorFor((AccountTransaction) element);
             }
         });
-        ColumnViewerSorter.createIgnoreCase(e -> ((AccountTransaction) e).getSource()).attachTo(column); // $NON-NLS-1$
+        ColumnViewerSorter.createIgnoreCase(e -> ((AccountTransaction) e).getSource()).attachTo(column);
         transactionsColumns.addColumn(column);
 
         transactionsColumns.createColumns(true);
@@ -508,7 +530,8 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
 
     private Color colorFor(AccountTransaction t)
     {
-        return t.getType().isDebit() ? Colors.theme().redForeground() : Colors.theme().greenForeground();
+        return t.getType().isDebit() ? ValueColorScheme.current().negativeForeground()
+                        : ValueColorScheme.current().positiveForeground();
     }
 
     private void hookKeyListener()

@@ -124,6 +124,7 @@ public class QuestradeGroupPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CAD");
 
@@ -157,6 +158,7 @@ public class QuestradeGroupPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CAD");
 
@@ -190,6 +192,7 @@ public class QuestradeGroupPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CAD");
 
@@ -223,6 +226,7 @@ public class QuestradeGroupPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CAD");
 
@@ -239,6 +243,26 @@ public class QuestradeGroupPDFExtractorTest
                         hasNote(null), //
                         hasAmount("CAD", 756.40), hasGrossValue("CAD", 756.40), //
                         hasTaxes("CAD", 0.00), hasFees("CAD", 0.00))));
+    }
+
+    @Test
+    public void testSecurityBuy07()
+    {
+        var extractor = new QuestradeGroupPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Buy07.txt"), errors);
+
+        assertThat(errors.size(), is(1));
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(0));
+        new AssertImportActions().check(results, "CAD");
     }
 
     @Test
@@ -290,6 +314,7 @@ public class QuestradeGroupPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CAD");
 
@@ -323,6 +348,7 @@ public class QuestradeGroupPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CAD");
 
@@ -334,7 +360,7 @@ public class QuestradeGroupPDFExtractorTest
 
         // check dividend transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-03-31T00:00"), hasShares(19.00), 
+                        hasDate("2023-03-31T00:00"), hasShares(19.00),
                         hasSource("Dividend03.txt"), //
                         hasNote("REC 03/23/23"), //
                         hasAmount("CAD", 1.67), hasGrossValue("CAD", 1.67), //

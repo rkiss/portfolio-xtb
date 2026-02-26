@@ -47,6 +47,20 @@ public class AccountTransaction extends Transaction
 
     private Type type;
 
+    /**
+     * Ex-date of this transaction.
+     * <p>
+     * For dividend payments, this is the ex-dividend date: the first trading
+     * day on which the security is traded without entitlement to the declared
+     * dividend. Only shareholders who own the security before this date receive
+     * the dividend.
+     * <p>
+     * The ex-date may also be used for other transaction types to map them to
+     * the period a security was held (for example, taxation of retained income
+     * booked at a later time).
+     */
+    private LocalDateTime exDate;
+
     public AccountTransaction()
     {
         // needed for xstream de-serialization
@@ -71,6 +85,17 @@ public class AccountTransaction extends Transaction
     public void setType(Type type)
     {
         this.type = type;
+        setUpdatedAt(Instant.now());
+    }
+
+    public LocalDateTime getExDate()
+    {
+        return exDate;
+    }
+
+    public void setExDate(LocalDateTime exDate)
+    {
+        this.exDate = exDate;
         setUpdatedAt(Instant.now());
     }
 

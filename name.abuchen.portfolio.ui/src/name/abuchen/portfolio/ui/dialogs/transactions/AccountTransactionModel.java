@@ -112,16 +112,21 @@ public class AccountTransactionModel extends AbstractModel
         }
         else
         {
-            if (sourceTransaction != null)
-            {
-                sourceAccount.deleteTransaction(sourceTransaction, client);
-                sourceTransaction = null;
-                sourceAccount = null;
-            }
-
             t = new AccountTransaction();
             t.setCurrencyCode(getAccountCurrencyCode());
             account.addTransaction(t);
+
+            if (sourceTransaction != null)
+            {
+                sourceAccount.deleteTransaction(sourceTransaction, client);
+
+                // preserve the source field from the original transaction
+                t.setSource(sourceTransaction.getSource());
+                t.setExDate(sourceTransaction.getExDate());
+
+                sourceTransaction = null;
+                sourceAccount = null;
+            }
         }
 
         t.setDateTime(LocalDateTime.of(date, time));

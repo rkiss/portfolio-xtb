@@ -17,6 +17,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.PortfolioTransferItem;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
+import name.abuchen.portfolio.datatransfer.Extractor.SkippedItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -228,6 +229,69 @@ public class ExtractorMatchers
         return new FailureMessageItemMatcher(message, matcher);
     }
 
+    private static class SkippedItemMatcher extends TypeSafeDiagnosingMatcher<Extractor.Item>
+    {
+        private String skipReason;
+        private Matcher<Extractor.Item> matcher;
+
+        public SkippedItemMatcher(String skipReason, Matcher<Extractor.Item> matcher)
+        {
+            this.skipReason = skipReason;
+            this.matcher = matcher;
+        }
+
+        @Override
+        protected boolean matchesSafely(Extractor.Item item, Description mismatchDescription)
+        {
+            if (!item.isSkipped())
+            {
+                mismatchDescription.appendText("\n* item is not skipped"); //$NON-NLS-1$
+                return false;
+            }
+
+            var skipped = (SkippedItem) item;
+            if (!Objects.equals(skipReason, skipped.getSkipReason()))
+            {
+                mismatchDescription.appendText(
+                                MessageFormat.format("\n* skip reason is ''{0}''", skipped.getSkipReason())); //$NON-NLS-1$
+                return false;
+            }
+
+            if (matcher != null)
+            {
+                var original = skipped.getOriginalItem();
+                if (!matcher.matches(original))
+                {
+                    matcher.describeMismatch(original, mismatchDescription);
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        @Override
+        public void describeTo(Description description)
+        {
+            description.appendText(MessageFormat.format("a skipped item with reason ''{0}''", skipReason)); //$NON-NLS-1$
+            if (matcher != null)
+            {
+                description.appendText(" and "); //$NON-NLS-1$
+                matcher.describeTo(description);
+            }
+        }
+    }
+
+    public static Matcher<Extractor.Item> skippedItem(String skipReason)
+    {
+        return new SkippedItemMatcher(skipReason, null);
+    }
+
+    public static Matcher<Extractor.Item> skippedItem(String skipReason, Matcher<Extractor.Item> matcher)
+    {
+        return new SkippedItemMatcher(skipReason, matcher);
+    }
+
     public static Matcher<Extractor.Item> hasAccount(Account account)
     {
         return new PropertyMatcher<>("primary account", account, Item::getAccountPrimary); //$NON-NLS-1$
@@ -394,6 +458,17 @@ public class ExtractorMatchers
         return new PropertyMatcher<>("date", //$NON-NLS-1$
                         expectecd, //
                         Transaction::getDateTime);
+    }
+
+    public static Matcher<Transaction> hasExDate(String dateString)
+    {
+        var expected = dateString.contains("T") //$NON-NLS-1$
+                        ? LocalDateTime.parse(dateString)
+                        : LocalDate.parse(dateString).atStartOfDay();
+
+        return new PropertyMatcher<>("exDate", //$NON-NLS-1$
+                        expected, //
+                        t -> ((AccountTransaction) t).getExDate());
     }
 
     public static Matcher<Transaction> hasShares(double value)

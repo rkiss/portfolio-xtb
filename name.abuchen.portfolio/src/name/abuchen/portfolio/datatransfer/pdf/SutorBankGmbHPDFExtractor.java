@@ -500,7 +500,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                             t.setCurrencyCode("EUR");
                                                             t.setAmount(asAmount(v.get("amount")));
 
-                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorOrderCancellationUnsupported);
+                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionOrderCancellationUnsupported);
                                                         }),
                                         // @formatter:off
                                         // 25.03.2024 22.03.2024 Verkauf Verkauf X-trackers MSCI USA Index -8,2731 1,0823 1.139,97 1.173,40 -31,69
@@ -917,7 +917,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                                         + "(\\-)?(?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             // Is type is "-" change from DEPOSIT to REMOVAL
-                                                            if ("Auszahlung".equals(trim(v.get("type"))) || "Überweisung".equals(trim(v.get("type"))))
+                                                            if ("Auszahlung".equals(v.get("type")) || "Überweisung".equals(v.get("type")))
                                                                 t.setType(AccountTransaction.Type.REMOVAL);
 
                                                             t.setDateTime(asDate(v.get("date")));
@@ -1110,7 +1110,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
                                                             t.setNote(v.get("note"));
 
-                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
                                                         }))
 
                         .wrap((t, ctx) -> {
@@ -1160,7 +1160,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(t.getSecurity().getCurrencyCode()));
                             t.setAmount(0L);
 
-                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
                         })
 
                         // @formatter:off

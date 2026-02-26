@@ -19,8 +19,6 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class OnvistaPDFExtractor extends AbstractPDFExtractor
 {
-    private static final String SKIP_TRANSACTION = "skipTransaction";
-
     public OnvistaPDFExtractor(Client client)
     {
         super(client);
@@ -556,7 +554,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("type").optional() //
                         .match("^(?<type>Storno) \\- Dividendengutschrift$") //
-                        .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorOrderCancellationUnsupported))
+                        .assign((t, v) -> v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported))
 
                         .oneOf( //
                                         // @formatter:off
@@ -689,6 +687,15 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]+ [A-Z]{3}\\/[A-Z]{3} [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
 
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // STK 50,000 21.04.2016 21.04.2016 EUR 0,200000
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("exDate") //
+                                                        .match("^STK [\\.,\\d]+ (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [A-Z]{3} [\\.,\\d]+$") //
+                                                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate")))))
+
                         .oneOf( //
                                         // @formatter:off
                                         // This is for the reinvestment of dividends
@@ -744,8 +751,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                                         .find("Ertragsthesaurierung .*") //
                                                         .match("^Steuerpflichtiger Betrag gem\\..*InvStG (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
-                                                            type.getCurrentContext().put(SKIP_TRANSACTION,
-                                                                            Messages.PDFSkipNotImportable);
+                                                            v.skipTransaction(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -897,7 +903,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
                         .conclude(ExtractorUtils.fixGrossValueA())
 
-                        .wrap((t, ctx) -> {
+                        .wrap(t -> {
                             var item = new TransactionItem(t);
 
                             // If we have multiple entries in the document, with
@@ -908,12 +914,6 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                             // If we have a gross reinvestment, then the "noTax"
                             // flag must be removed.
                             type.getCurrentContext().remove("noTax");
-
-                            if (type.getCurrentContext().containsKey(SKIP_TRANSACTION))
-                                return new SkippedItem(item, type.getCurrentContext().get(SKIP_TRANSACTION));
-
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
 
                             return item;
                         });
@@ -994,8 +994,6 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("currency") //
                                                         .match("^STK [\\.,\\d]+ .* (?<currency>[A-Z]{3}) [\\.,\\d]+$") //
                                                         .assign((t, v) -> {
-                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
-
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(0L);
                                                         }))
@@ -1012,14 +1010,11 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         .match("^.* (?<note2>[\\d]+) \\/ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*$") //
                         .assign((t, v) -> t.setNote(v.get("note1") + " " + v.get("note2")))
 
-                        .wrap((t, ctx) -> {
+                        .wrap(t -> {
                             var item = new TransactionItem(t);
 
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+                                return new SkippedItem(item, Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             return item;
                         });
@@ -1357,8 +1352,11 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(t -> {
+                            var item = new TransactionItem(t);
+
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                                return new TransactionItem(t);
+                                return item;
+
                             return null;
                         });
     }
@@ -1496,7 +1494,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                                                         + "|Kapitalerh.hung" //
                                                                         + "|Umtausch)).*$") //
                                                         .assign((t, v) -> {
-                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+                                                            v.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                                                             t.setCurrencyCode(t.getSecurity().getCurrencyCode());
                                                             t.setAmount(0L);
@@ -1510,7 +1508,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<type>Dividendengutschrift).*$") //
                                                         .find(".*Ausbuchung der Rechte.*") //
                                                         .assign((t, v) -> {
-                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+                                                            v.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                                                             t.setCurrencyCode(t.getSecurity().getCurrencyCode());
                                                             t.setAmount(0L);
@@ -1530,7 +1528,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                                         .find("Durchf.hrungsanzeige.*") //
                                                         .find(".* im Verhältnis.*") //
                                                         .assign((t, v) -> {
-                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorSplitTransactionsNotSupported);
+                                                            v.markAsFailure(Messages.MsgErrorTransactionSplitUnsupported);
 
                                                             t.setCurrencyCode(t.getSecurity().getCurrencyCode());
                                                             t.setAmount(0L);
@@ -1547,20 +1545,13 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<type>Kapitalherabsetzung).*$") //
                                                         .find("(Umbuchung der Teil\\- in Vollrechte|Durchf.hrungsanzeige).*") //
                                                         .assign((t, v) -> {
-                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+                                                            v.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                                                             t.setCurrencyCode(t.getSecurity().getCurrencyCode());
                                                             t.setAmount(0L);
                                                         }))
 
-                        .wrap((t, ctx) -> {
-                            var item = new TransactionItem(t);
-
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-
-                            return item;
-                        });
+                        .wrap(TransactionItem::new);
     }
 
     private void addTaxReturnBlock(DocumentType type)
@@ -1833,8 +1824,11 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setNote(v.get("note1") + " " + v.get("note2")))
 
                         .wrap(t -> {
+                            var item = new TransactionItem(t);
+
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                                return new TransactionItem(t);
+                                return item;
+
                             return null;
                         });
     }
