@@ -215,6 +215,9 @@ public class XTBTransactionsHistoryExtractor implements Extractor
                     case "Free-funds Interest Tax": //$NON-NLS-1$
                         operation = createCashOperation(Type.INTEREST_CHARGE, xtbCashOp, errors);
                         break;
+                    case "commission": //$NON-NLS-1$
+                        operation = createCashOperation(Type.FEES, xtbCashOp, errors);
+                        break;
                     case "stock transfer fee": //$NON-NLS-1$
                         if (security != null)
                         {
