@@ -136,7 +136,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("type").optional() //
                         .match("^(?<type>Korrektur des Beleg).*$") //
-                        .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionOrderCancellationUnsupported))
+                        .assign((t, v) -> v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported))
 
                         .oneOf( //
                                         // @formatter:off
@@ -800,16 +800,11 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap((t, ctx) -> {
-                            var item = new BuySellEntryItem(t);
-
                             // If we have multiple entries in the document,
                             // then the "negative" flag must be removed.
                             type.getCurrentContext().remove("negative");
 
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-
-                            return item;
+                            return new BuySellEntryItem(t);
                         });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
@@ -846,7 +841,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("type").optional() //
                         .match("^(?<type>Korrektur des Beleg).*$") //
-                        .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionOrderCancellationUnsupported))
+                        .assign((t, v) -> v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported))
 
                         .oneOf( //
                                         // @formatter:off
@@ -975,14 +970,9 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap((t, ctx) -> {
-                            var item = new TransactionItem(t);
-
                             // If we have multiple entries in the document,
                             // then the "negative" flag must be removed.
                             type.getCurrentContext().remove("negative");
-
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
 
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
                                 return new TransactionItem(t);
@@ -1288,14 +1278,14 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("type") //
                                                         .match("^(?<type>Storno) der Dividende .*$") //
-                                                        .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionOrderCancellationUnsupported)),
+                                                        .assign((t, v) -> v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported)),
                                         // @formatter:off
                                         // STORNIERUNG DER DIVIDENDE
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("type") //
                                                         .match("^(?<type>STORNIERUNG) DER DIVIDENDE$") //
-                                                        .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionOrderCancellationUnsupported)))
+                                                        .assign((t, v) -> v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported)))
 
                         .oneOf( //
                                         // @formatter:off
@@ -1642,7 +1632,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
 
-                            if (v.getTransactionContext().getString(FAILURE) == null)
+                            if (v.getTransactionContext().getFailureReason() == null)
                                 t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
                         })
 
@@ -1654,7 +1644,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
 
-                            if (v.getTransactionContext().getString(FAILURE) == null)
+                            if (v.getTransactionContext().getFailureReason() == null)
                                 t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
                         })
 
@@ -1666,7 +1656,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
 
-                            if (v.getTransactionContext().getString(FAILURE) == null)
+                            if (v.getTransactionContext().getFailureReason() == null)
                                 t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
                         })
 
@@ -1675,11 +1665,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .wrap((t, ctx) -> {
                             var item = new TransactionItem(t);
 
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             return item;
                         });
@@ -1780,19 +1767,12 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                             {
                                 t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                 t.setAmount(0L);
-                                v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                v.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
                             }
                             t.setNote(v.get("note"));
                         })
 
-                        .wrap((t, ctx) -> {
-                            var item = new TransactionItem(t);
-
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-
-                            return item;
-                        });
+                        .wrap(TransactionItem::new);
     }
 
     private void addExAnteFeeTransaction()
@@ -1999,17 +1979,12 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                             t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
-                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionAlternativeDocumentRequired);
+                            v.markAsFailure(Messages.MsgErrorTransactionAlternativeDocumentRequired);
                         })
 
                         .wrap((t, ctx) -> {
-                            var item = new TransactionItem(t);
-
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                                return item;
+                                return new TransactionItem(t);
                             return null;
                         }));
     }
@@ -3190,17 +3165,12 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
-                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionAlternativeDocumentRequired);
+                                                            v.markAsFailure(Messages.MsgErrorTransactionAlternativeDocumentRequired);
                                                         }))
 
                         .wrap((t, ctx) -> {
-                            var item = new TransactionItem(t);
-
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                                return item;
+                                return new TransactionItem(t);
                             return null;
                         }));
 
@@ -3238,7 +3208,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
-                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionAlternativeDocumentRequired);
+                                                            v.markAsFailure(Messages.MsgErrorTransactionAlternativeDocumentRequired);
                                                         }),
                                         // @formatter:off
                                         // 01 nov Pago de
@@ -3258,7 +3228,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
-                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionAlternativeDocumentRequired);
+                                                            v.markAsFailure(Messages.MsgErrorTransactionAlternativeDocumentRequired);
                                                         }),
                                         // @formatter:off
                                         // 01
@@ -3278,7 +3248,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
-                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionAlternativeDocumentRequired);
+                                                            v.markAsFailure(Messages.MsgErrorTransactionAlternativeDocumentRequired);
                                                         }),
                                         // @formatter:off
                                         // 01 Dez.
@@ -3302,16 +3272,11 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
-                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionAlternativeDocumentRequired);
+                                                            v.markAsFailure(Messages.MsgErrorTransactionAlternativeDocumentRequired);
                                                         }))
                         .wrap((t, ctx) -> {
-                            var item = new TransactionItem(t);
-
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                                return item;
+                                return new TransactionItem(t);
                             return null;
                         }));
 
@@ -3341,7 +3306,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
-                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionAlternativeDocumentRequired);
+                                                            v.markAsFailure(Messages.MsgErrorTransactionAlternativeDocumentRequired);
                                                         }),
                                         // @formatter:off
                                         // 01
@@ -3361,17 +3326,12 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
-                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionAlternativeDocumentRequired);
+                                                            v.markAsFailure(Messages.MsgErrorTransactionAlternativeDocumentRequired);
                                                         }))
 
                         .wrap((t, ctx) -> {
-                            var item = new TransactionItem(t);
-
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                                return item;
+                                return new TransactionItem(t);
                             return null;
                         }));
 
@@ -3511,7 +3471,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("type").optional() //
                         .match("^(?<type>STORNO) STEUERKORREKTUR$") //
-                        .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionOrderCancellationUnsupported))
+                        .assign((t, v) -> v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported))
 
                         .optionalOneOf( //
                                         // @formatter:off
@@ -3650,14 +3610,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }))
 
-                        .wrap((t, ctx) -> {
-                            var item = new TransactionItem(t);
-
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-
-                            return item;
-                        });
+                        .wrap(TransactionItem::new);
     }
 
     private void addTaxDistributionEquivalentIncomeTransaction()
@@ -3720,14 +3673,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }))
 
-                        .wrap((t, ctx) -> {
-                            var item = new TransactionItem(t);
-
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-
-                            return item;
-                        });
+                        .wrap(TransactionItem::new);
     }
 
     private void addDepositStatementTransaction()
@@ -4186,9 +4132,9 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                                 t.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
 
                                                             if ("SPLIT".equals(v.get("transaction")))
-                                                                v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionSplitUnsupported);
+                                                                v.markAsFailure(Messages.MsgErrorTransactionSplitUnsupported);
                                                             else
-                                                                v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                                                v.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
@@ -4216,20 +4162,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             t.setShares(asShares(v.get("shares")));
                                                             t.setSecurity(getOrCreateSecurity(v));
 
-                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                                            v.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                                                             t.setCurrencyCode(asCurrencyCode(t.getSecurity().getCurrencyCode()));
                                                             t.setAmount(0L);
                                                         }))
 
-                        .wrap((t, ctx) -> {
-                            var item = new TransactionItem(t);
-
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-
-                            return item;
-                        });
+                        .wrap(TransactionItem::new);
     }
 
     private void addBuySellTaxReturnBlock(DocumentType type)
@@ -4628,14 +4567,14 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("type") //
                                                         .match("^(?<type>Storno) der Dividende .*$") //
-                                                        .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionOrderCancellationUnsupported)),
+                                                        .assign((t, v) -> v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported)),
                                         // @formatter:off
                                         // STORNIERUNG DER DIVIDENDE
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("type") //
                                                         .match("^(?<type>STORNIERUNG) DER DIVIDENDE$") //
-                                                        .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionOrderCancellationUnsupported)))
+                                                        .assign((t, v) -> v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported)))
 
                         .oneOf( //
                                         // @formatter:off
@@ -4953,16 +4892,11 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                             }
                         })
 
-                        .wrap((t, ctx) -> {
-                            var item = new TransactionItem(t);
-
+                        .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
                                 return null;
 
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-
-                            return item;
+                            return new TransactionItem(t);
                         });
     }
 

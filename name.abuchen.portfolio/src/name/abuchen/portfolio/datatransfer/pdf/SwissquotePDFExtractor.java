@@ -708,7 +708,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                         .find("Bezeichnung Anzahl Kontraktw.hrung Preis")
                         .match("^(?<name>.*) [\\.'\\d]+ (?<currency>[A-Z]{3}) \\-$") //
                         .assign((t, v) -> {
-                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                            v.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             t.setSecurity(getOrCreateSecurity(v));
 
@@ -750,14 +750,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                         .match("^.* (?<note>Referenz: .*)$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
-                        .wrap((t, ctx) -> {
-                            var item = new TransactionItem(t);
-
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-
-                            return item;
-                        });
+                        .wrap(TransactionItem::new);
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)

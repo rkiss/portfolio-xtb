@@ -227,7 +227,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
 
                             // if CUSIP lenght != 9
                             if (trim(v.get("wkn")).length() < 9)
-                                v.getTransactionContext().put(FAILURE, MessageFormat.format(Messages.MsgErrorInvalidWKN, trim(v.get("name"))));
+                                v.markAsFailure(MessageFormat.format(Messages.MsgErrorInvalidWKN, trim(v.get("name"))));
                             else
                                 t.setSecurity(getOrCreateSecurity(v));
 
@@ -236,14 +236,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
-                        .wrap((t, ctx) -> {
-                            TransactionItem item = new TransactionItem(t);
-
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-
-                            return item;
-                        }));
+                        .wrap(TransactionItem::new));
 
         // @formatter:off
         // Formatting:

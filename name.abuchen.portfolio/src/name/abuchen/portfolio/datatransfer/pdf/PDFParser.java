@@ -402,7 +402,7 @@ import name.abuchen.portfolio.model.TypedMap;
     /* package */static class Transaction<T>
     {
         private Supplier<T> supplier;
-        private BiFunction<T, TypedMap, Item> wrapper;
+        private BiFunction<T, TransactionContext, Item> wrapper;
         private List<Section<T>> sections = new ArrayList<>();
         private List<Consumer<T>> concludes = new ArrayList<>();
 
@@ -509,7 +509,7 @@ import name.abuchen.portfolio.model.TypedMap;
             return wrap((t, c) -> wrapper.apply(t));
         }
 
-        public Transaction<T> wrap(BiFunction<T, TypedMap, Item> wrapper)
+        public Transaction<T> wrap(BiFunction<T, TransactionContext, Item> wrapper)
         {
             this.wrapper = wrapper;
             return this;

@@ -458,7 +458,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
 
                     v.put("currency", asCurrencyCode(context.get("currency")));
 
-                    v.getTransactionContext().put(FAILURE, MessageFormat.format(Messages.MsgMissingTickerSymbol, trim(v.get("name"))));
+                    v.markAsFailure(MessageFormat.format(Messages.MsgMissingTickerSymbol, trim(v.get("name"))));
 
                     t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + context.get("year")));
                     t.setShares(asShares(v.get("shares")));
@@ -467,11 +467,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
-                .wrap((t, ctx) -> {
-                    TransactionItem item = new TransactionItem(t);
-                    item.setFailureMessage(ctx.getString(FAILURE));
-                    return item;
-                }));
+                .wrap(TransactionItem::new));
 
         // Dec 31 Gross management fee to Wealthsimple – – -$4.42
         // Dec 31 Promotions and discounts applied to Wealthsimple fee – – $0.26

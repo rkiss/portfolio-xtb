@@ -261,7 +261,7 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("type").optional() //
                         .match("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}(?<type>Storno) Abschluss.* [\\.,\\d]+ [H|S][\\s]*$") //
-                        .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionOrderCancellationUnsupported))
+                        .assign((t, v) -> v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported))
 
                         .section("date", "amount", "type") //
                         .documentContext("currency", "year") //
@@ -324,14 +324,7 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
                         .match("^[\\s]*Abschluss vom (?<note>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
-                        .wrap((t, ctx) -> {
-                            var item = new TransactionItem(t);
-
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-
-                            return item;
-                        }));
+                        .wrap(TransactionItem::new));
 
         // @formatter:off
         // 31.12.2021 Bonuszinsen A8765ABCD 1,23 31.12.2021 20.137,08

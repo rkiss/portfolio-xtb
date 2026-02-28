@@ -104,18 +104,12 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
 
                             // if CUSIP lenght != 9
                             if (v.get("wkn").length() != 9)
-                                v.getTransactionContext().put(FAILURE, "CUSIP is maybe incorrect. " + t.getPortfolioTransaction().getDateTime() + " " + t.getPortfolioTransaction().getSecurity());
+                                v.markAsFailure("CUSIP is maybe incorrect. " + t.getPortfolioTransaction().getDateTime() + " " + t.getPortfolioTransaction().getSecurity());
                             else
                                 t.setSecurity(getOrCreateSecurity(v));
                         })
 
-                        .wrap((t, ctx) -> {
-                            BuySellEntryItem item = new BuySellEntryItem(t);
-
-                            if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() != 0)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-                            return item;
-                        }));
+                        .wrap(BuySellEntryItem::new));
 
         // @formatter:off
         // Formatting:
@@ -164,7 +158,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
 
                                                             // if CUSIP lenght != 9
                                                             if (v.get("wkn").length() != 9)
-                                                                v.getTransactionContext().put(FAILURE, "CUSIP is maybe incorrect. " + t.getDateTime() + " " + t.getSecurity());
+                                                                v.markAsFailure("CUSIP is maybe incorrect. " + t.getDateTime() + " " + t.getSecurity());
                                                             else
                                                                 t.setSecurity(getOrCreateSecurity(v));
 
@@ -188,7 +182,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
 
                                                             // if CUSIP lenght != 9
                                                             if (v.get("wkn").length() != 9)
-                                                                v.getTransactionContext().put(FAILURE, "CUSIP is maybe incorrect. " + t.getDateTime() + " " + t.getSecurity());
+                                                                v.markAsFailure("CUSIP is maybe incorrect. " + t.getDateTime() + " " + t.getSecurity());
                                                             else
                                                                 t.setSecurity(getOrCreateSecurity(v));
 
@@ -212,19 +206,12 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
 
                                                             // if CUSIP lenght != 9
                                                             if (v.get("wkn").length() != 9)
-                                                                v.getTransactionContext().put(FAILURE, "CUSIP is maybe incorrect. " + t.getDateTime() + " " + t.getSecurity());
+                                                                v.markAsFailure("CUSIP is maybe incorrect. " + t.getDateTime() + " " + t.getSecurity());
                                                             else
                                                                 t.setSecurity(getOrCreateSecurity(v));
                                                         }))
 
-                        .wrap((t, ctx) -> {
-                            TransactionItem item = new TransactionItem(t);
-
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-
-                            return item;
-                        }));
+                        .wrap(TransactionItem::new));
 
         Block blockWithholdTaxForDividende = new Block("^[\\w]{3} [\\w]{3} Withholding Adjustment .{9} Journal [\\.,\\d]+$");
         type.addBlock(blockWithholdTaxForDividende);
@@ -255,19 +242,12 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
 
                                                             // if CUSIP lenght != 9
                                                             if (v.get("wkn").length() != 9)
-                                                                v.getTransactionContext().put(FAILURE, "CUSIP is maybe incorrect. " + t.getDateTime() + " " + t.getSecurity());
+                                                                v.markAsFailure("CUSIP is maybe incorrect. " + t.getDateTime() + " " + t.getSecurity());
                                                             else
                                                                 t.setSecurity(getOrCreateSecurity(v));
                                                         })
 
-                        .wrap((t, ctx) -> {
-                            TransactionItem item = new TransactionItem(t);
-
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-
-                            return item;
-                        })));
+                        .wrap(TransactionItem::new)));
 
         // @formatter:off
         // Formatting:
@@ -303,19 +283,12 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
 
                             // if CUSIP lenght != 9
                             if (v.get("wkn").length() != 9)
-                                v.getTransactionContext().put(FAILURE, "CUSIP is maybe incorrect. " + t.getDateTime() + " " + t.getSecurity());
+                                v.markAsFailure("CUSIP is maybe incorrect. " + t.getDateTime() + " " + t.getSecurity());
                             else
                                 t.setSecurity(getOrCreateSecurity(v));
                         })
 
-                        .wrap((t, ctx) -> {
-                            TransactionItem item = new TransactionItem(t);
-
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-
-                            return item;
-                        }));
+                        .wrap(TransactionItem::new));
 
         // @formatter:off
         // Formatting:
@@ -347,19 +320,12 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
 
                             // if CUSIP lenght != 9
                             if (v.get("wkn").length() != 9)
-                                v.getTransactionContext().put(FAILURE, "CUSIP is maybe incorrect. " + t.getDateTime() + " " + t.getSecurity());
+                                v.markAsFailure("CUSIP is maybe incorrect. " + t.getDateTime() + " " + t.getSecurity());
                             else
                                 t.setSecurity(getOrCreateSecurity(v));
                         })
 
-                        .wrap((t, ctx) -> {
-                            TransactionItem item = new TransactionItem(t);
-
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-
-                            return item;
-                        }));
+                        .wrap(TransactionItem::new));
 
         // @formatter:off
         // Formatting:
@@ -393,19 +359,12 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
 
                             // if CUSIP lenght != 9
                             if (v.get("wkn").length() != 9)
-                                v.getTransactionContext().put(FAILURE, "CUSIP is maybe incorrect. " + t.getDateTime() + " " + t.getSecurity());
+                                v.markAsFailure("CUSIP is maybe incorrect. " + t.getDateTime() + " " + t.getSecurity());
                             else
                                 t.setSecurity(getOrCreateSecurity(v));
                         })
 
-                        .wrap((t, ctx) -> {
-                            TransactionItem item = new TransactionItem(t);
-
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-
-                            return item;
-                        }));
+                        .wrap(TransactionItem::new));
 
         // @formatter:off
         // Formatting:

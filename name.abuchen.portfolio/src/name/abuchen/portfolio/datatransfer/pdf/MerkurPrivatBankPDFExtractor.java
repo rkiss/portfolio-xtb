@@ -318,13 +318,11 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
                         .match("^.*(?<note>Abrechnungsnr\\. [\\d]+).*$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
-                        .wrap(t -> {
-                            var item = new TransactionItem(t);
-
+                        .wrap((t, ctx) -> {
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
-                            return item;
+                            return new TransactionItem(t);
                         });
     }
 

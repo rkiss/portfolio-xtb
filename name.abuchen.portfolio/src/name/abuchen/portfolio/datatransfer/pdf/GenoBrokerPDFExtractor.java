@@ -354,7 +354,7 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
                             t.setDateTime(asDate(v.get("date")));
 
                             // No amount available
-                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                            v.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
                             t.setCurrencyCode(CurrencyUnit.EUR);
                             t.setAmount(0);
                         })
@@ -366,14 +366,7 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
                         .match("^St.ck (?<shares>[\\.,\\d]+)(\\-)? .*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                        .wrap((t, ctx) -> {
-                            var item = new TransactionItem(t);
-
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-
-                            return item;
-                        });
+                        .wrap(TransactionItem::new);
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)

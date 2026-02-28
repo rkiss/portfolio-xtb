@@ -154,7 +154,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("type").optional() //
                         .match("^(?<type>Storno), .*$") //
-                        .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionOrderCancellationUnsupported))
+                        .assign((t, v) -> v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported))
 
                         .oneOf( //
                                         // @formatter:off
@@ -300,9 +300,6 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                         .wrap((t, ctx) -> {
                             var item = new BuySellEntryItem(t);
-
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
 
                             // @formatter:off
                             // Handshake for tax lost adjustment transaction
@@ -635,13 +632,11 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .match("^.*(?<note>Abrechnungsnr\\. [\\d]+).*$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
-                        .wrap(t -> {
-                            var item = new TransactionItem(t);
-
+                        .wrap((t, ctx) -> {
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
-                            return item;
+                            return new TransactionItem(t);
                         });
     }
 

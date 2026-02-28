@@ -277,11 +277,11 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
                         .match("^.*(?<note>Order\\-\\/Ref\\.nr\\. .*)$")
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
-                        .wrap(t -> {
+                        .wrap((t, ctx) -> {
                             var item = new TransactionItem(t);
 
                             if (t.getAmount() == 0)
-                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             return item;
                         });

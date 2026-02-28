@@ -297,7 +297,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("type").optional() //
                         .match("^(?<type>Storno) unserer Ertr.gnisgutschrift .*$") //
-                        .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionOrderCancellationUnsupported))
+                        .assign((t, v) -> v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported))
 
                         // @formatter:off
                         // If we have a positive amount and a gross reinvestment,
@@ -455,7 +455,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                                                 var fxAmount = Money.of(asCurrencyCode(t.getSecurity().getCurrencyCode()), t.getMonetaryAmount().getAmount());
                                                                 t.addUnit(new Unit(Unit.Type.GROSS_VALUE, t.getMonetaryAmount(), fxAmount, BigDecimal.ONE));
 
-                                                                v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                                                v.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
                                                             }
                                                         }))
 
@@ -584,9 +584,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<note1>Thesaurierung) .* (?<note2>[\\w]{3}) (?<note3>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note1") + " (" + v.get("note3") + " " + v.get("note2") + ")", " | "))))
 
-                        .wrap((t, ctx) -> {
-                            var item = new TransactionItem(t);
-
+                        .wrap(t -> {
                             // If we have multiple entries in the document, with
                             // taxes and tax refunds, then the "negative" flag
                             // must be removed.
@@ -596,10 +594,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                             // flag must be removed.
                             type.getCurrentContext().remove("noTax");
 
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-
-                            return item;
+                            return new TransactionItem(t);
                         });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
@@ -684,13 +679,11 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<note>Abrechnungsnr\\. .*)$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
-                        .wrap(t -> {
-                            var item = new TransactionItem(t);
-
+                        .wrap((t, ctx) -> {
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
-                            return item;
+                            return new TransactionItem(t);
                         });
     }
 
@@ -864,16 +857,14 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                             t.setNote(v.get("note"));
                         })
 
-                        .wrap(t -> {
-                            var item = new TransactionItem(t);
-
+                        .wrap((t, ctx) -> {
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             if (t.getDateTime() == null && t.getNote() == null)
                                 return null;
 
-                            return item;
+                            return new TransactionItem(t);
                         }));
 
         // @formatter:off
@@ -994,13 +985,11 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                             t.setNote(v.get("note"));
                         })
 
-                        .wrap(t -> {
-                            var item = new TransactionItem(t);
-
+                        .wrap((t, ctx) -> {
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
-                            return item;
+                            return new TransactionItem(t);
                         }));
 
         var depositRemovalBlock_Format03 = new Block("^.*[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$");
@@ -1157,14 +1146,12 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                                             t.setNote(v.get("note"));
                                                         }))
 
-                        .wrap(t -> {
-                            var item = new TransactionItem(t);
-
+                        .wrap((t, ctx) -> {
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                                return item;
+                                return new TransactionItem(t);
 
                             return null;
                         }));
@@ -1275,14 +1262,12 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                             t.setNote(v.get("note"));
                         })
 
-                        .wrap(t -> {
-                            var item = new TransactionItem(t);
-
+                        .wrap((t, ctx) -> {
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                                return item;
+                                return new TransactionItem(t);
 
                             return null;
                         }));
@@ -1386,14 +1371,12 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                             t.setNote(v.get("note"));
                         })
 
-                        .wrap(t -> {
-                            var item = new TransactionItem(t);
-
+                        .wrap((t, ctx) -> {
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                                return item;
+                                return new TransactionItem(t);
 
                             return null;
                         }));
@@ -1471,13 +1454,11 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                                             t.setNote(trim(v.get("note")));
                                                         }))
 
-                        .wrap(t -> {
-                            var item = new TransactionItem(t);
-
+                        .wrap((t, ctx) -> {
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
-                            return item;
+                            return new TransactionItem(t);
                         }));
 
         var interestBlock = new Block("^Abrechnungszeitraum vom .*$", "^Abrechnung .*$");
@@ -1540,13 +1521,11 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                                             t.setNote(trim(v.get("note")));
                                                         }))
 
-                        .wrap(t -> {
-                            var item = new TransactionItem(t);
-
+                        .wrap((t, ctx) -> {
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
-                            return item;
+                            return new TransactionItem(t);
                         }));
 
         var taxReturnBlock_Format01 = new Block("^.* [\\-|\\+|\\s][\\.,\\d]+$");
