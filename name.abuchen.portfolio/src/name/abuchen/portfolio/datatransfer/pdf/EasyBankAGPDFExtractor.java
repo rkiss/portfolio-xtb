@@ -301,7 +301,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("type").optional() //
                         .match("^Gesch.ftsart: (?<type>Ertrag \\- STORNO).*$") //
-                        .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionOrderCancellationUnsupported))
+                        .assign((t, v) -> v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported))
 
                         .oneOf( //
                                         // @formatter:off
@@ -494,11 +494,8 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                         .wrap((t, ctx) -> {
                             var item = new TransactionItem(t);
 
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             return item;
                         });
@@ -955,11 +952,11 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                         + "|Kapitalmaßnahme wegen Entflechtung)).*$") //
                         .assign((t, v) -> {
                             if ("Umtausch/Bezug".equals(v.get("type")))
-                                v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                v.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
                             else if ("Ausbuchung wegen Titelumtausch".equals(v.get("type")))
-                                v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionSplitUnsupported);
+                                v.markAsFailure(Messages.MsgErrorTransactionSplitUnsupported);
                             else if ("Kapitalmaßnahme wegen Entflechtung".equals(v.get("type")))
-                                v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionSplitUnsupported);
+                                v.markAsFailure(Messages.MsgErrorTransactionSplitUnsupported);
 
                         })
 
@@ -1054,14 +1051,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                         .match("^.* (?<note>Auftrags\\-Nr\\.: .* \\- [\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}).*$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
-                        .wrap((t, ctx) -> {
-                            var item = new TransactionItem(t);
-
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-
-                            return item;
-                        });
+                        .wrap(TransactionItem::new);
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)

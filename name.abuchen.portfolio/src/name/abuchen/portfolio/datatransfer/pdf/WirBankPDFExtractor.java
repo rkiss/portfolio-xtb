@@ -284,7 +284,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                             TransactionItem item = new TransactionItem(t);
 
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             return item;
                         });
@@ -335,7 +335,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("type").optional() //
                         .match("^(?<type>Cancelation Dividend Payment)$") //
-                        .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionOrderCancellationUnsupported))
+                        .assign((t, v) -> v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported))
 
                         // @formatter:off
                         // Dividendenart: Ordentliche Dividende
@@ -422,14 +422,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         .match("^(Dividendenart|Type of dividend|Type de dividende): (?<note>.*)") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
-                        .wrap((t, ctx) -> {
-                            TransactionItem item = new TransactionItem(t);
-
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-
-                            return item;
-                        });
+                        .wrap(TransactionItem::new);
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)

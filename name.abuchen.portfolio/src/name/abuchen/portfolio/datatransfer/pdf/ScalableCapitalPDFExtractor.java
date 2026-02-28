@@ -265,9 +265,6 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         .wrap((t, ctx) -> {
                             var item = new BuySellEntryItem(t);
 
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-
                             // @formatter:off
                             // Handshake for tax lost adjustment transaction
                             // Also use number for that is also used to (later) convert it back to a number
@@ -566,7 +563,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*" //
                                         + "(?<type>[\\-|\\+])(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> {
-                         v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionAlternativeDocumentRequired);
+                         v.markAsFailure(Messages.MsgErrorTransactionAlternativeDocumentRequired);
 
                          // Is type --> "-" change from INTEREST to INTEREST_CHARGE
                             if ("-".equals(v.get("type")))
@@ -577,14 +574,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
-                        .wrap((t, ctx) -> {
-                            var item = new TransactionItem(t);
-
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-
-                            return item;
-                        }));
+                        .wrap(TransactionItem::new));
     }
 
     private void addTaxAdjustmentTransaction()
@@ -723,11 +713,11 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                                         })
                         )
 
-                        .wrap(t -> {
+                        .wrap((t, ctx) -> {
                             var item = new TransactionItem(t);
 
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             return item;
                         });

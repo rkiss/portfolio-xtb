@@ -500,7 +500,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                             t.setCurrencyCode("EUR");
                                                             t.setAmount(asAmount(v.get("amount")));
 
-                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionOrderCancellationUnsupported);
+                                                            v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported);
                                                         }),
                                         // @formatter:off
                                         // 25.03.2024 22.03.2024 Verkauf Verkauf X-trackers MSCI USA Index -8,2731 1,0823 1.139,97 1.173,40 -31,69
@@ -763,14 +763,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                             t.setNote(v.get("note"));
                                                         }))
 
-                        .wrap((t, ctx) -> {
-                            var item = new BuySellEntryItem(t);
-
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-
-                            return item;
-                        });
+                        .wrap(BuySellEntryItem::new);
 
         var dividendsBlock = new Transaction<AccountTransaction>();
 
@@ -1110,17 +1103,10 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
                                                             t.setNote(v.get("note"));
 
-                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                                            v.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
                                                         }))
 
-                        .wrap((t, ctx) -> {
-                            var item = new TransactionItem(t);
-
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-
-                            return item;
-                        });
+                        .wrap(TransactionItem::new);
     }
 
     private void addNonImportableTransaction()
@@ -1160,7 +1146,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(t.getSecurity().getCurrencyCode()));
                             t.setAmount(0L);
 
-                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                            v.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
                         })
 
                         // @formatter:off
@@ -1185,14 +1171,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<note>Verh.ltnis Neu\\/.*)$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
-                        .wrap((t, ctx) -> {
-                            var item = new TransactionItem(t);
-
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-
-                            return item;
-                        });
+                        .wrap(TransactionItem::new);
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)

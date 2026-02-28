@@ -657,11 +657,11 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                                                                 Messages.MsgErrorTransactionSkipIfDetailsMissing);
                                                         }))
 
-                    .wrap(t -> {
+                    .wrap((t, ctx) -> {
                         var item = new TransactionItem(t);
 
                         if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                            item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                            ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                         if (type.getCurrentContext().containsKey(SKIP_TRANSACTION))
                         {

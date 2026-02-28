@@ -570,7 +570,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                             var item = new TransactionItem(t);
 
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             return item;
                         });
@@ -650,18 +650,15 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                         .section("note").optional() //
                         .match("^.* (?<note>Verh.ltnis: .*)$") //
                         .assign((t, v) -> {
-                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionSplitUnsupported);
+                            v.markAsFailure(Messages.MsgErrorTransactionSplitUnsupported);
                             t.setNote(concatenate(t.getNote(), v.get("note"), " | "));
                         })
 
                         .wrap((t, ctx) -> {
                             var item = new TransactionItem(t);
 
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             return item;
                         });
@@ -718,7 +715,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                                         .attributes("amount", "currency") //
                                                         .match("^Zu (Lasten|Gunsten) IBAN .* (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                                                         .assign((t, v) -> {
-                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                                            v.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -730,7 +727,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                                         .attributes("currency") //
                                                         .match("^Verrechnung: IBAN .* (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
-                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                                            v.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(0L);
@@ -749,18 +746,11 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                         .section("note").optional() //
                         .match("^Die (?<note>.nderung\\/Stornierung) dieses Auftrages .*$") //
                         .assign((t, v) -> {
-                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionOrderCancellationUnsupported);
+                            v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported);
                             t.setNote(concatenate(t.getNote(), v.get("note"), " | "));
                         })
 
-                        .wrap((t, ctx) -> {
-                            var item = new TransactionItem(t);
-
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-
-                            return item;
-                        });
+                        .wrap(TransactionItem::new);
     }
 
     private void addAccountStatementTransactions()

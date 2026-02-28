@@ -695,7 +695,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("type") //
                                                         .match("^(?<type>Freie Lieferung) .*$") //
                                                         .assign((t, v) -> {
-                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                                            v.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
                                                             t.setCurrencyCode(t.getSecurity().getCurrencyCode());
                                                             t.setAmount(0L);
                                                         }),
@@ -706,7 +706,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("type") //
                                                         .match("^Wir haben Ihrem Depot im (?<type>Verh.ltnis) [\\d]+ : [\\d]+ .*$") //
                                                         .assign((t, v) -> {
-                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionSplitUnsupported);
+                                                            v.markAsFailure(Messages.MsgErrorTransactionSplitUnsupported);
                                                             t.setCurrencyCode(t.getSecurity().getCurrencyCode());
                                                             t.setAmount(0L);
                                                         }))
@@ -723,14 +723,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                         .match("^.* (?<note1>.*) \\/ [\\d\\s]+\\.[\\d\\s]+\\.[\\d\\s]+.*$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note")) + " " + trim(v.get("note1"))))
 
-                        .wrap((t, ctx) -> {
-                            TransactionItem item = new TransactionItem(t);
-
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-
-                            return item;
-                        });
+                        .wrap(TransactionItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -1358,17 +1351,10 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                             t.setNote(v.get("note"));
 
                             if (v.get("note").startsWith("Ginmon Gebuehrenrechnung"))
-                                v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionAlternativeDocumentRequired);
+                                v.markAsFailure(Messages.MsgErrorTransactionAlternativeDocumentRequired);
                         })
 
-                        .wrap((t, ctx) -> {
-                            TransactionItem item = new TransactionItem(t);
-
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-
-                            return item;
-                        }));
+                        .wrap(TransactionItem::new));
 
         // @formatter:off
         // 23.09.2022 23.09.2022 Sollzinsen -100,00 EUR
@@ -1425,17 +1411,10 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(v.get("currency"));
                             t.setShares(asShares(v.get("shares")));
                             t.setAmount(asAmount(v.get("amount")));
-                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionAlternativeDocumentRequired);
+                            v.markAsFailure(Messages.MsgErrorTransactionAlternativeDocumentRequired);
                         })
 
-                        .wrap((t, ctx) -> {
-                            BuySellEntryItem item = new BuySellEntryItem(t);
-
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-
-                            return item;
-                        }));
+                        .wrap(BuySellEntryItem::new));
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)

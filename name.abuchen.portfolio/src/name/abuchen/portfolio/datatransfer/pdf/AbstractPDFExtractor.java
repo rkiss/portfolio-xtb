@@ -52,8 +52,6 @@ import name.abuchen.portfolio.online.impl.CoinGeckoSearchProvider;
  */
 public abstract class AbstractPDFExtractor implements Extractor
 {
-    protected static final String FAILURE = "FAILURE"; //$NON-NLS-1$
-
     private final NumberFormat numberFormat = NumberFormat.getInstance(Locale.GERMANY);
 
     private final Client client;

@@ -299,7 +299,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("type").optional() //
                         .match("^(?<type>STORNO VON) .*$") //
-                        .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionOrderCancellationUnsupported))
+                        .assign((t, v) -> v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported))
 
                         // @formatter:off
                         // 16.12 Kauf aus Dauerauftrag            Depot    7800000000/20191216-45514943 18.12 99,68-
@@ -349,14 +349,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
 
-                        .wrap((t, ctx) -> {
-                            var item = new BuySellEntryItem(t);
-
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-
-                            return item;
-                        });
+                        .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
