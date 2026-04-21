@@ -209,6 +209,9 @@ public class XTBTransactionsHistoryExtractor implements Extractor
                     case "deposit": //$NON-NLS-1$
                         operation = createCashOperation(Type.DEPOSIT, xtbCashOp, errors);
                         break;
+                    case "withdrawal": //$NON-NLS-1$
+                        operation = createCashOperation(Type.REMOVAL, xtbCashOp, errors);
+                        break;
                     case "Free-funds Interest": //$NON-NLS-1$
                         operation = createCashOperation(Type.INTEREST, xtbCashOp, errors);
                         break;
@@ -259,6 +262,9 @@ public class XTBTransactionsHistoryExtractor implements Extractor
                     case "tax RO":
                         operation = processTaxes(xtbCashOp, metadata, errors);
                         break;
+                    case "tax IFTT": // France tax
+                        operation = processTaxes(xtbCashOp, metadata, errors);
+                        break;
                     case "Stock sale", "close trade": //$NON-NLS-1$//$NON-NLS-2$
                         // we do not process this here, they are processed by
                         // the processClosedPositions method
@@ -284,26 +290,30 @@ public class XTBTransactionsHistoryExtractor implements Extractor
 
     private Item processTaxes(XTBCashOperation xtbCashOp, StatementMetadata metadata, List<Exception> errors)
     {
-        // Romania Tax 3% BAVA.DK
-        // RO tax VETH.DE 2025-08-14 (31.00 RON) ///OMI/1102002336/31.00//
-        Matcher matcher = Pattern.compile("^Romania Tax\\s+(\\d+(\\.\\d+)?\\s*%)\\s*([A-Z0-9]+(\\.[A-Z0-9]+)?)$")
-                        .matcher(xtbCashOp.note());
-        int grpIndex = 3;
-        if (!matcher.matches())
+        Security security = xtbCashOp.security;
+        if (xtbCashOp.security == null)
         {
-            // try with the second matcher
-            matcher = Pattern.compile("^RO tax\\s+([A-Z0-9]+(\\.[A-Z0-9]+)?)\\s+.+$").matcher(xtbCashOp.note());
-            grpIndex = 1;
+            // Romania Tax 3% BAVA.DK
+            // RO tax VETH.DE 2025-08-14 (31.00 RON) ///OMI/1102002336/31.00//
+            Matcher matcher = Pattern.compile("^Romania Tax\\s+(\\d+(\\.\\d+)?\\s*%)\\s*([A-Z0-9]+(\\.[A-Z0-9]+)?)$")
+                            .matcher(xtbCashOp.note());
+            int grpIndex = 3;
             if (!matcher.matches())
             {
-                errors.add(new IllegalStateException(
-                                String.format("Pattern for transaction %s does not match a tax expression, got %s",
-                                                xtbCashOp.ID, xtbCashOp.note())));
-                return null;
+                // try with the second matcher
+                matcher = Pattern.compile("^RO tax\\s+([A-Z0-9]+(\\.[A-Z0-9]+)?)\\s+.+$").matcher(xtbCashOp.note());
+                grpIndex = 1;
+                if (!matcher.matches())
+                {
+                    errors.add(new IllegalStateException(
+                                    String.format("Pattern for transaction %s does not match a tax expression, got %s",
+                                                    xtbCashOp.ID, xtbCashOp.note())));
+                    return null;
+                }
             }
+            security = getSecurity(matcher.group(grpIndex), errors);
+            
         }
-        String sSecurity = matcher.group(grpIndex);
-        Security security = getSecurity(sSecurity, errors);
         XTBCashOperation adjCashOp = new XTBCashOperation(xtbCashOp.ID(), xtbCashOp.date(), xtbCashOp.note(), security,
                         xtbCashOp.amount(), xtbCashOp.dblAmount());
         Item result = createCashOperation(xtbCashOp.dblAmount() < 0 ? Type.TAXES : Type.TAX_REFUND, adjCashOp, errors);
@@ -334,11 +344,18 @@ public class XTBTransactionsHistoryExtractor implements Extractor
     private Item processDivident(XTBCashOperation xtbCashOp, List<Exception> errors)
     {
         // SXXPIEX.DE EUR 0.1696/ SHR
-        Matcher matcher = Pattern.compile("^.+\\s+(\\d+(\\.\\d+)?)\\s*/\\s*SHR$").matcher(xtbCashOp.note());
+        // corr STN.US USD 0.2450/ SHR from 2026-04-15
+        String note = xtbCashOp.note();
+        // if (note.startsWith("corr "))
+        // {
+        // // Correction to dividend
+        // note = note.substring("corr ".length());
+        // }
+        Matcher matcher = Pattern.compile("^.+\\s+(\\d+(\\.\\d+)?)\\s*/\\s*SHR.*$").matcher(note);
         if (!matcher.matches())
         {
             errors.add(new IllegalStateException(
-                            String.format("Pattern for transaction %s does not match a divident expression, got %s",
+                            String.format("Pattern for transaction %s does not match a divident expression, got '%s'",
                                             xtbCashOp.ID, xtbCashOp.note())));
             return null;
         }
@@ -347,7 +364,7 @@ public class XTBTransactionsHistoryExtractor implements Extractor
         try
         {
             double dShares = Double.parseDouble(sDivPerShare);
-            nrOfShares = Math.round(Values.Share.factor() * xtbCashOp.dblAmount / dShares);
+            nrOfShares = Math.round(Values.Share.factor() * Math.abs(xtbCashOp.dblAmount) / dShares);
         }
         catch (NumberFormatException e)
         {
@@ -359,6 +376,9 @@ public class XTBTransactionsHistoryExtractor implements Extractor
 
         AccountTransaction transaction = (AccountTransaction) result.getSubject();
 
+        // createCashOperation use the absolute value of the amount
+        // but the amount might be negative in case of corrections.
+        transaction.setAmount(xtbCashOp.amount().getAmount());
         transaction.setShares(nrOfShares);
 
         return result;
