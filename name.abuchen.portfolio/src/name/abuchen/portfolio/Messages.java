@@ -357,6 +357,7 @@ public class Messages extends NLS
     public static String VINISAppValueSecuritiesPurchase;
     public static String VINISAppValueTotalAssetsMarket;
     public static String VINISAppValueTotalAssetsPurchase;
+    public static String XTBExtractorLabel;
 
     static
     {

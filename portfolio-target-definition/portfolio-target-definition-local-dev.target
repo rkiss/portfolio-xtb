@@ -16,6 +16,7 @@
 		<unit id="net.bytebuddy.byte-buddy-agent.source" version="1.17.7"/>
 		<unit id="org.apache.commons.math3" version="3.6.1"/>
 		<unit id="org.apache.commons.math3.source" version="3.6.1"/>
+		<unit id="org.eclipse.orbit.maven.org.apache.poi.feature.group" version="4.37.0.v20250715-1000"/>
 		<unit id="org.hamcrest.core" version="2.2.0.v20230809-1000"/>
 		<unit id="org.hamcrest.core.source" version="2.2.0.v20230809-1000"/>
 		<unit id="org.hamcrest.library" version="2.2.0.v20230809-1000"/>
